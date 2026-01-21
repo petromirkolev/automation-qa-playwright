@@ -1,9 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto(
-    'https://petromirkolev.github.io/js-foundations-projects/projects/odin-todo/src/index.html',
-  );
+  await page.goto('/');
 });
 
 test.describe('Smoke test suite', () => {
