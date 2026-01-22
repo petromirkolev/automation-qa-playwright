@@ -1,44 +1,32 @@
 import { test, expect } from '@playwright/test';
-
-test.beforeEach(async ({ page }) => {
-  await page.goto('./');
-});
+import { ToDo } from './page-objects/ToDo';
 
 test.describe('Edge cases test suite', () => {
-  const addTodo = async (page, title) => {
-    await page.locator('[data-input="new-todo"]').fill(title);
-    await page.locator('[data-action="add-todo"]').click();
-
-    await expect(page.locator('.todo-text', { hasText: title })).toBeVisible();
-  };
-
-  const todoRow = (page, title) =>
-    page.locator('.todo-item', {
-      has: page.locator('.todo-text', { hasText: title }),
-    });
-
-  test('Add task by Enter key', async ({ page }) => {
-    await page.locator('[data-input="new-todo"]').fill('Get money');
-    await page.locator('[data-input="new-todo"]').press('Enter');
-
-    await expect(todoRow(page, 'Get money')).toBeVisible();
+  let todo;
+  test.beforeEach(async ({ page }) => {
+    await page.goto('./');
+    todo = new ToDo(page);
   });
 
-  test('Reject adding an empty task', async ({ page }) => {
-    await page.locator('[data-input="new-todo"]').fill('  ');
-    await page.locator('[data-action="add-todo"]').click();
-
-    await expect(page.locator('.todo-item')).toHaveCount(0);
+  test('Add task by Enter key', async () => {
+    await todo.loc.taskInput.fill('Get money');
+    await todo.loc.taskInput.press('Enter');
+    await expect(todo.row('Get money')).toBeVisible();
   });
 
-  test('Trim whitespaces when adding a task', async ({ page }) => {
-    await addTodo(page, ' Shopping ');
-    await expect(todoRow(page, 'Shopping')).toBeVisible();
+  test('Reject adding an empty task', async () => {
+    await todo.add('  ');
+    await expect(todo.loc.taskRow).toHaveCount(0);
+  });
+
+  test('Trim whitespaces when adding a task', async () => {
+    await todo.add(' Shopping ');
+    await expect(todo.row('Shopping')).toBeVisible();
   });
 
   test('Editing one task does not mutate the rest', async ({ page }) => {
-    await addTodo(page, 'Fix the sink');
-    await addTodo(page, 'Wals the dog');
+    await todo.add('Fix the sink');
+    await todo.add('Wals the dog');
 
     page.once('dialog', async (dialog) => {
       expect(dialog.type()).toBe('prompt');
@@ -47,17 +35,15 @@ test.describe('Edge cases test suite', () => {
       await dialog.accept('Walk the dog');
     });
 
-    await todoRow(page, 'Wals the dog')
-      .locator('[data-action="edit-todo"]')
-      .click();
+    await todo.editBtn('Wals the dog').click();
 
-    await expect(todoRow(page, 'Walk the dog')).toBeVisible();
-    await expect(todoRow(page, 'Fix the sink')).toBeVisible();
+    await expect(todo.row('Walk the dog')).toBeVisible();
+    await expect(todo.row('Fix the sink')).toBeVisible();
   });
 
   test('Cancel task edit does not mutate state', async ({ page }) => {
-    await addTodo(page, 'Fix the sink');
-    await addTodo(page, 'Wals the dog');
+    await todo.add('Fix the sink');
+    await todo.add('Wals the dog');
 
     page.once('dialog', async (dialog) => {
       expect(dialog.type()).toBe('prompt');
@@ -66,17 +52,15 @@ test.describe('Edge cases test suite', () => {
       await dialog.dismiss();
     });
 
-    await todoRow(page, 'Wals the dog')
-      .locator('[data-action="edit-todo"]')
-      .click();
+    await todo.editBtn('Wals the dog').click();
 
-    await expect(todoRow(page, 'Wals the dog')).toBeVisible();
-    await expect(todoRow(page, 'Fix the sink')).toBeVisible();
+    await expect(todo.row('Wals the dog')).toBeVisible();
+    await expect(todo.row('Fix the sink')).toBeVisible();
   });
 
   test('Reject editing a task with empty input', async ({ page }) => {
-    await addTodo(page, 'Fix the sink');
-    await addTodo(page, 'Walk the dog');
+    await todo.add('Fix the sink');
+    await todo.add('Walk the dog');
 
     page.once('dialog', async (dialog) => {
       expect(dialog.type()).toBe('prompt');
@@ -85,59 +69,44 @@ test.describe('Edge cases test suite', () => {
       await dialog.accept('');
     });
 
-    await todoRow(page, 'Walk the dog')
-      .locator('[data-action="edit-todo"]')
-      .click();
+    await todo.editBtn('Walk the dog').click();
 
-    await expect(todoRow(page, 'Walk the dog')).toBeVisible();
-    await expect(todoRow(page, 'Fix the sink')).toBeVisible();
+    await expect(todo.row('Walk the dog')).toBeVisible();
+    await expect(todo.row('Fix the sink')).toBeVisible();
   });
 
-  test('Deleting a task does not mutate other tasks', async ({ page }) => {
-    await addTodo(page, 'Task 1');
-    await addTodo(page, 'Task 2');
-    await addTodo(page, 'Task 3');
+  test('Deleting a task does not mutate other tasks', async () => {
+    await todo.add('Task 1');
+    await todo.add('Task 2');
+    await todo.add('Task 3');
 
-    await todoRow(page, 'Task 2')
-      .locator('[data-action="delete-todo"]')
-      .click();
+    await todo.deleteBtn('Task 2').click();
 
-    await expect(todoRow(page, 'Task 2')).toHaveCount(0);
-    await expect(todoRow(page, 'Task 1')).toBeVisible();
-    await expect(todoRow(page, 'Task 3')).toBeVisible();
+    await expect(todo.row('Task 2')).toHaveCount(0);
+    await expect(todo.row('Task 1')).toBeVisible();
+    await expect(todo.row('Task 3')).toBeVisible();
   });
 
-  test('Marking a task as completed does not mutate other tasks', async ({
-    page,
-  }) => {
-    await addTodo(page, 'Task 1');
-    await addTodo(page, 'Task 2');
-    await addTodo(page, 'Task 3');
+  test('Marking a task as completed does not mutate other tasks', async () => {
+    await todo.add('Task 1');
+    await todo.add('Task 2');
+    await todo.add('Task 3');
 
-    await todoRow(page, 'Task 2')
-      .locator('[data-action="toggle-completed"]')
-      .click();
+    await todo.toggleCompleted('Task 2').click();
 
-    await expect(todoRow(page, 'Task 2')).toHaveClass(/completed/);
-    await expect(todoRow(page, 'Task 1')).not.toHaveClass(/completed/);
-    await expect(todoRow(page, 'Task 3')).not.toHaveClass(/completed/);
+    await expect(todo.row('Task 2')).toHaveClass(/completed/);
+    await expect(todo.row('Task 1')).not.toHaveClass(/completed/);
+    await expect(todo.row('Task 3')).not.toHaveClass(/completed/);
   });
 
-  test('Toggling a complete task returns to not completed ', async ({
-    page,
-  }) => {
-    await addTodo(page, 'Task 1');
-    await addTodo(page, 'Task 2');
-    await addTodo(page, 'Task 3');
+  test('Toggling a complete task returns to not completed ', async () => {
+    await todo.add('Task 1');
+    await todo.add('Task 2');
+    await todo.add('Task 3');
 
-    await todoRow(page, 'Task 2')
-      .locator('[data-action="toggle-completed"]')
-      .click();
+    await todo.toggleCompleted('Task 2').click();
+    await todo.toggleCompleted('Task 2').click();
 
-    await todoRow(page, 'Task 2')
-      .locator('[data-action="toggle-completed"]')
-      .click();
-
-    await expect(todoRow(page, 'Task 2')).not.toHaveClass(/completed/);
+    await expect(todo.row('Task 2')).not.toHaveClass(/completed/);
   });
 });

@@ -11,6 +11,7 @@ export class ToDo {
       clearAllTasks: page.locator('[data-action="clear-all"]'),
       searchTask: page.locator('[data-input="search"]'),
       emptyView: page.locator('[data-view="empty"]'),
+      taskRow: page.locator('.todo-item'),
     };
   }
 
