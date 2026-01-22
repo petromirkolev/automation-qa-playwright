@@ -5,6 +5,10 @@ export class ToDo {
       taskInput: page.locator('[data-input="new-todo"]'),
       addButton: page.locator('[data-action="add-todo"]'),
       taskList: page.locator('.list-wrap'),
+      filterTasks: page.locator('[data-input="filter-status"]'),
+      clearCompletedTasks: page.locator('[data-action="clear-completed"]'),
+      clearAllTasks: page.locator('[data-action="clear-all"]'),
+      searchTask: page.locator('[data-input="search"]'),
     };
   }
 
@@ -30,4 +34,10 @@ export class ToDo {
   deleteBtn(title) {
     return this.row(title).locator('[data-action="delete-todo"]');
   }
+
+  getVisibleTitles = async () => {
+    return (await this.page.locator('.todo-text').allTextContents()).map((t) =>
+      t.trim(),
+    );
+  };
 }
