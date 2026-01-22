@@ -6,9 +6,11 @@ export class ToDo {
       addButton: page.locator('[data-action="add-todo"]'),
       taskList: page.locator('.list-wrap'),
       filterTasks: page.locator('[data-input="filter-status"]'),
+      sortTasks: page.locator('[data-input="sort"]'),
       clearCompletedTasks: page.locator('[data-action="clear-completed"]'),
       clearAllTasks: page.locator('[data-action="clear-all"]'),
       searchTask: page.locator('[data-input="search"]'),
+      emptyView: page.locator('[data-view="empty"]'),
     };
   }
 
