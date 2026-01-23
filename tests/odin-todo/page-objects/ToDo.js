@@ -20,6 +20,12 @@ export class ToDo {
     await this.loc.addButton.click();
   }
 
+  async gotoFresh() {
+    await this.page.goto('./');
+    await this.page.evaluate(() => localStorage.clear());
+    await this.page.reload();
+  }
+
   row(title) {
     return this.page.locator('.todo-item', {
       has: this.page.locator('.todo-text', { hasText: title }),
