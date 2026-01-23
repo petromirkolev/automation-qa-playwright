@@ -12,7 +12,7 @@ test.describe('Smoke test suite', () => {
   test('App loads and main UI is visible', async () => {
     await expect(weather.loc.input).toBeVisible();
     await expect(weather.loc.searchButton).toBeVisible();
-    await expect(weather.loc.currentWeather).toBeVisible();
+    await expect(weather.loc.currWeather).toBeVisible();
     await expect(weather.loc.forecast).toBeVisible();
   });
 
