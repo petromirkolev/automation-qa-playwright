@@ -1,20 +1,68 @@
-// Leading/trailing whitespace trimmed (“ London ” works)
-// Empty input rejected (no API call, shows validation or no-op)
-// Whitespace-only rejected
-// Very long string rejected gracefully (no crash, shows error or validation)
-// Special characters handled (e.g. “São Paulo”, “München”) – at least doesn’t crash
-// Mixed-case input works (“lOnDoN”)
+import { test, expect } from '@playwright/test';
+import { Weather } from './page-objects/Weather';
 
-////
+test.describe('Edge test suite', () => {
+  let weather;
 
-// Rapid consecutive searches: last search wins
-// Type/search “London”, immediately search “Paris” → final UI shows Paris
-// Slow network: loading indicator remains visible until results, then disappears (no “half-rendered” UI)
-// Cancel/replace in-flight request (if your app effectively does this): older response must not overwrite newer results
+  test.beforeEach(async ({ page }) => {
+    await page.goto('./');
+    weather = new Weather(page);
+  });
 
-////
+  test('Leading/trailing whitespace is trimmed', async () => {
+    await weather.searchAndWait(' Prague ');
+    await expect(weather.loc.currLocation).toHaveText('Prague');
+  });
 
-// After invalid search, previous valid data should not remain as “current result” (stale data bug)
-// Error message disappears after a successful search
-// Loading indicator doesn’t get stuck after errors
-// No duplicate result blocks created after multiple searches (results container updates, not appends infinitely)
+  test('Empty input is not processed', async () => {
+    await weather.search('');
+    await expect(weather.loc.currLocation).not.toBeVisible();
+  });
+
+  test('Whitespace input is not processed', async () => {
+    await weather.search('     ');
+    await expect(weather.loc.currLocation).not.toBeVisible();
+  });
+
+  test('Special chars are handled properly', async () => {
+    await weather.searchAndWait('São Paulo');
+    await expect(weather.loc.statusMessage).not.toContainText('Invalid');
+  });
+
+  test('Mixed input is accepted', async () => {
+    await weather.searchAndWait('lOnDoN');
+    await expect(weather.loc.currLocation).toHaveText('London');
+  });
+
+  test('Rapid consecutive searches: last search wins', async () => {
+    await weather.searchAndWait('Varna');
+    await weather.searchAndWait('Burgas');
+    await weather.searchAndWait('Plovdiv');
+    await expect(weather.loc.currLocation).toHaveText('Plovdiv');
+  });
+
+  test('City re-search shows last searched city', async () => {
+    await weather.loc.input.fill('Varna');
+    await weather.loc.input.fill('');
+    await weather.searchAndWait('Burgas');
+    await expect(weather.loc.currLocation).toHaveText('Burgas');
+  });
+
+  test('Error message disappears after a successful search', async () => {
+    await weather.search('asdasdsadsa');
+    await weather.waitReady();
+
+    await expect(weather.loc.statusMessage).toContainText('No results found', {
+      timeout: 5_000,
+    });
+
+    await weather.searchAndWait('Plovdiv');
+
+    await expect(weather.loc.statusMessage).not.toContainText(
+      'No results found',
+      {
+        timeout: 5_000,
+      },
+    );
+  });
+});

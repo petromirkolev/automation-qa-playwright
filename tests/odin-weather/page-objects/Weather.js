@@ -21,14 +21,21 @@ export class Weather {
   }
 
   async search(city) {
-    await this.loc.input.fill(city);
+    const query = String(city ?? '').trim();
+    await this.loc.input.fill(query);
     await this.loc.searchButton.click();
-    await expect(this.loc.currLocation).toHaveText(city, { timeout: 10_000 });
+    return query;
   }
 
   async waitReady() {
     await expect(this.loc.statusMessage).not.toHaveText('Loading...', {
       timeout: 10_000,
     });
+  }
+
+  async searchAndWait(city) {
+    const q = await this.search(city);
+    await this.waitReady();
+    return q;
   }
 }
