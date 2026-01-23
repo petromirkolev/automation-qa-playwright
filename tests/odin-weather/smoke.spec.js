@@ -32,6 +32,7 @@ test.describe('Smoke test suite', () => {
   test('Search via mouse click', async () => {
     await weather.loc.input.fill('London');
     await weather.loc.searchButton.click();
+    await weather.waitReady();
     await expect(weather.loc.currLocation).toHaveText('London');
   });
 

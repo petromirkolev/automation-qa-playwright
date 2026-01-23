@@ -29,7 +29,7 @@ export class Weather {
 
   async waitReady() {
     await expect(this.loc.statusMessage).not.toHaveText('Loading...', {
-      timeout: 10_000,
+      timeout: process.env.CI ? 30_000 : 10_000,
     });
   }
 
