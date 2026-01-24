@@ -2,7 +2,7 @@
 
 ## Target
 
-[https://petromirkolev.github.io/js-foundations-projects/projects/odin-todo/src/index.html](https://petromirkolev.github.io/js-foundations-projects/projects/odin-todo/src/index.html)
+[https://petromirkolev.github.io/js-foundations-projects/projects/odin-todo/index.html](https://petromirkolev.github.io/js-foundations-projects/projects/odin-todo/index.html)
 
 ## Smoke
 
