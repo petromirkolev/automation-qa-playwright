@@ -39,5 +39,12 @@ export default defineConfig({
           'https://petromirkolev.github.io/js-foundations-projects/projects/odin-weather/',
       },
     },
+    {
+      name: 'login form',
+      testDir: 'tests/login-form',
+      use: {
+        baseURL: 'https://petromirk30.sg-host.com/',
+      },
+    },
   ],
 });
