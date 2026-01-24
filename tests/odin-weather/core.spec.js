@@ -1,10 +1,12 @@
 import { test, expect } from '@playwright/test';
 import { Weather } from './page-objects/Weather';
+import { mockOpenMeteo } from '../../mocks/openMeteoMocks.js';
 
 test.describe('Core test suite', () => {
   let weather;
 
   test.beforeEach(async ({ page }) => {
+    if (process.env.CI) await mockOpenMeteo(page);
     await page.goto('./');
     weather = new Weather(page);
   });
@@ -61,16 +63,7 @@ test.describe('Core test suite', () => {
     await expect(weather.loc.currTemp).toContainText('C');
   });
 
-  test.skip(
-    process.env.CI,
-    'Loading state is flaky in CI due to real API timing',
-  );
-
   test('Forecast renders expected count and basic fields', async () => {
-    test.skip(
-      process.env.CI,
-      'Loading state is flaky in CI due to real API timing',
-    );
     await weather.search('Plovdiv');
     await weather.waitReady();
 

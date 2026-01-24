@@ -1,10 +1,12 @@
 import { test, expect } from '@playwright/test';
 import { Weather } from './page-objects/Weather';
+import { mockOpenMeteo } from '../../mocks/openMeteoMocks.js';
 
 test.describe('Edge test suite', () => {
   let weather;
 
   test.beforeEach(async ({ page }) => {
+    if (process.env.CI) await mockOpenMeteo(page);
     await page.goto('./');
     weather = new Weather(page);
   });
