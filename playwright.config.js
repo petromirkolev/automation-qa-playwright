@@ -40,8 +40,8 @@ export default defineConfig({
       },
     },
     {
-      name: 'login form',
-      testDir: 'tests/login-form',
+      name: 'registration form',
+      testDir: 'tests/registration-form',
       use: {
         baseURL: 'https://petromirk30.sg-host.com/',
       },
