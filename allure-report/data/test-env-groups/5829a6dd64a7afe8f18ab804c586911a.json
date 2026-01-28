@@ -1,1 +1,0 @@
-{"id":"5829a6dd64a7afe8f18ab804c586911a","fullName":"reg-page.spec.js:51:11","name":"Fill in invalid email with no user, no domain, and no TLD.","status":"failed","testResultsByEnv":{"default":"76a6b5a761f1bdd205bdc4b19b0f1700"}}
