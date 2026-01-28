@@ -1,17 +1,13 @@
-import { test, expect } from '@playwright/test';
-import { Weather } from './page-objects/Weather';
-import { mockOpenMeteo } from '../../mocks/openMeteoMocks.js';
+import { test, expect } from './test-options.js';
 
 test.describe('Core test suite', () => {
-  let weather;
-
   test.beforeEach(async ({ page }) => {
-    if (process.env.CI) await mockOpenMeteo(page);
     await page.goto('./');
-    weather = new Weather(page);
   });
 
-  test('Valid search shows current weather and forecast', async () => {
+  test('Valid search shows current weather and forecast', async ({
+    weather,
+  }) => {
     await weather.search('Plovdiv');
     await weather.waitReady();
 
@@ -26,7 +22,7 @@ test.describe('Core test suite', () => {
     await expect(items.first()).toBeVisible();
   });
 
-  test('Second search updates results', async ({ page }) => {
+  test('Second search updates results', async ({ page, weather }) => {
     await weather.search('Plovdiv');
     await weather.waitReady();
 
@@ -43,7 +39,9 @@ test.describe('Core test suite', () => {
     expect(secondUpdated).not.toBe(firstUpdated);
   });
 
-  test('Invalid city search shows a clear error message', async () => {
+  test('Invalid city search shows a clear error message', async ({
+    weather,
+  }) => {
     await weather.loc.input.fill('асдасдасдас');
     await weather.loc.searchButton.click();
 
@@ -52,7 +50,9 @@ test.describe('Core test suite', () => {
     });
   });
 
-  test('Units toggle updates displayed temperature unit', async () => {
+  test('Units toggle updates displayed temperature unit', async ({
+    weather,
+  }) => {
     await weather.search('Plovdiv');
     await weather.waitReady();
 
@@ -63,7 +63,9 @@ test.describe('Core test suite', () => {
     await expect(weather.loc.currTemp).toContainText('C');
   });
 
-  test('Forecast renders expected count and basic fields', async () => {
+  test('Forecast renders expected count and basic fields', async ({
+    weather,
+  }) => {
     await weather.search('Plovdiv');
     await weather.waitReady();
 

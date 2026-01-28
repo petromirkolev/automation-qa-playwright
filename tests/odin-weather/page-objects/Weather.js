@@ -22,6 +22,7 @@ export class Weather {
 
   async search(city) {
     const query = String(city ?? '').trim();
+    if (!query) return '';
     await this.loc.input.fill(query);
     await this.loc.searchButton.click();
     return query;
