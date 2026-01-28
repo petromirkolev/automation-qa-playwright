@@ -8,7 +8,7 @@ export const test = base.extend({
 
   // "switch" fixture: when requested, it installs routes
   mockOpenMeteo: [
-    async ({ page }, use) => {
+    async ({ page }, use, testInfo) => {
       const enabled = testInfo.project.use.mockOpenMeteo;
 
       if (enabled) {
