@@ -22,7 +22,6 @@ Focus: stable selectors, clean test architecture (POM + fixtures where useful), 
   - "tests/odin-todo/"
   - "tests/odin-weather/"
   - "tests/registration-form/"
-  - "tests/page-objects/" (shared POMs if applicable)
 - "mocks/" — mock payloads for CI-stable runs (ex: Weather API)
 - "test-plans/" — test plan notes per target app
 - "playwright.config.js" — Playwright config
