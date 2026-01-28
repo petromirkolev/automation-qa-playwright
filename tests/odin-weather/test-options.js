@@ -9,8 +9,9 @@ export const test = base.extend({
   // "switch" fixture: when requested, it installs routes
   mockOpenMeteo: [
     async ({ page }, use) => {
-      // install routes for CI only
-      if (process.env.CI) {
+      const enabled = testInfo.project.use.mockOpenMeteo;
+
+      if (enabled) {
         await page.route('**/v1/search?**', async (route) => {
           const url = new URL(route.request().url());
           const name = (url.searchParams.get('name') || '').toLowerCase();

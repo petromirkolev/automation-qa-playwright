@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npx playwright test",
+    "test:ci": "npx playwright test --project=todo --project=weather-ui-mocked --project=registration-form --grep-invert @api-live",
     "ui": "npx playwright test --ui",
     "report": "npx playwright show-report"
   },

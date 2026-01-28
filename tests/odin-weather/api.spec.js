@@ -1,6 +1,6 @@
 import { test, expect } from './test-options.js';
 
-test.describe('API test suite', () => {
+test.describe('@api-live API test suite', () => {
   test('Known city returns results with lat/lon', async ({ request }) => {
     const city = 'Plovdiv';
 

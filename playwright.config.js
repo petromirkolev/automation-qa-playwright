@@ -1,6 +1,4 @@
-// @ts-check
 import { defineConfig, devices } from '@playwright/test';
-import AllureReporter, { allure } from 'allure-playwright';
 
 /**
  * @see https://playwright.dev/docs/test-configuration
@@ -16,10 +14,12 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html'], ['allure-playwright']],
+  reporter: 'html',
   use: {
     ...devices['Desktop Chrome'],
-    baseURL: 'https://example.com', // default fallback, overridden per project
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
 
   projects: [
@@ -32,15 +32,27 @@ export default defineConfig({
       },
     },
     {
-      name: 'weather',
+      name: 'weather-ui-mocked',
       testDir: 'tests/odin-weather',
+      grepInvert: /@api-live/,
       use: {
         baseURL:
           'https://petromirkolev.github.io/js-foundations-projects/projects/odin-weather/',
+        mockOpenMeteo: true,
       },
     },
     {
-      name: 'registration form',
+      name: 'weather-ui-live',
+      testDir: 'tests/odin-weather',
+      grepInvert: /@api-live/,
+      use: {
+        baseURL:
+          'https://petromirkolev.github.io/js-foundations-projects/projects/odin-weather/',
+        mockOpenMeteo: false,
+      },
+    },
+    {
+      name: 'registration-form',
       testDir: 'tests/registration-form',
       use: {
         baseURL: 'https://petromirk30.sg-host.com/',
