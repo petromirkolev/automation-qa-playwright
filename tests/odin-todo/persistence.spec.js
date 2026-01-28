@@ -1,30 +1,27 @@
-import { test, expect } from '@playwright/test';
-import { ToDo } from './page-objects/ToDo';
+import { test, expect } from './test-options.js';
 
 test.describe('Persistence test suite', () => {
-  let todo;
-
-  test.beforeEach(async ({ page }) => {
-    todo = new ToDo(page);
+  test.beforeEach(async ({ gotoFresh }) => {
+    await gotoFresh();
   });
 
-  test('Tasks persist after page reload', async ({ page }) => {
-    await todo.gotoFresh();
+  test('Tasks persist after page reload', async ({ todo, page }) => {
     await todo.add('Get milk');
     await page.reload();
     await expect(todo.row('Get milk')).toBeVisible();
   });
 
-  test('Completed task persists after page reload', async ({ page }) => {
-    await todo.gotoFresh();
+  test('Completed task persists after page reload', async ({ todo, page }) => {
     await todo.add('Get milk');
     await todo.toggleCompleted('Get milk').click();
     await page.reload();
     await expect(todo.row('Get milk')).toHaveClass(/completed/);
   });
 
-  test('Edited task title persists after page reload', async ({ page }) => {
-    await todo.gotoFresh();
+  test('Edited task title persists after page reload', async ({
+    todo,
+    page,
+  }) => {
     await todo.add('Get milk');
 
     page.once('dialog', async (dialog) => {
@@ -40,8 +37,10 @@ test.describe('Persistence test suite', () => {
     await expect(todo.row('Walk the dog')).toBeVisible();
   });
 
-  test('Deleted task remains deleted after page reload', async ({ page }) => {
-    await todo.gotoFresh();
+  test('Deleted task remains deleted after page reload', async ({
+    todo,
+    page,
+  }) => {
     await todo.add('Get milk');
     await todo.add('Get beer');
     await todo.deleteBtn('Get milk').click();
