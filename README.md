@@ -1,8 +1,6 @@
 # Automation QA Portfolio — Playwright
 
-End-to-end (E2E) UI automation tests built with **Playwright**.  
-Targets are my own JavaScript apps (Todo / Weather).  
-Focus: stable selectors, clean test architecture (POM + fixtures where useful), and CI reliability.
+End-to-end (E2E) UI automation tests built with **Playwright**.
 
 ---
 

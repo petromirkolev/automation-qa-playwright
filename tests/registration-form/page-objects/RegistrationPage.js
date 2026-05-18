@@ -1,12 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-/**
- * RegistrationPage (POM)
- *
- * Goals: Keep locators in one place, provides small, reusable actions and reusable assertions for validation.
- */
 export class RegistrationPage {
-  constructor(page) {
+  constructor() {
     this.page = page;
 
     this.loc = {
@@ -14,21 +9,17 @@ export class RegistrationPage {
       confirmEmailLabel: page.getByText('Confirm Email'),
       passLabel: page.getByText('Password'),
 
-      // Inputs
       emailInput: page.locator('[data-cy="email-input"]'),
       confirmEmailInput: page.locator('.email-confirm'),
       passwordInput: page.locator('[data-automation="password-field"]'),
 
-      // Actions
       submitBtn: page.locator('#submitBtn'),
       submissionStatus: page.locator('#submission-status'),
 
-      // Inline validation errors
       emailError: page.locator('#emailError'),
       confirmEmailError: page.locator('#confirmEmailError'),
       passError: page.locator('#passwordError'),
 
-      // Password UI
       showPassword: page.locator('.toggle-password-btn'),
       strengthBar: page.locator('.strength-bar'),
     };
@@ -46,18 +37,12 @@ export class RegistrationPage {
     await this.loc.passwordInput.fill(password);
   }
 
-  /**
-   * Convenience method for “happy path” filling. Keeps tests cleaner and reduces repetition.
-   */
   async fillForm(email, confirmEmail, password) {
     await this.fillEmail(email);
     await this.fillConfirmEmail(confirmEmail);
     await this.fillPassword(password);
   }
 
-  /**
-   * Click submit and wait for the registration endpoint response. Using Promise.all avoids a race condition.
-   */
   async submitAndWaitForApi() {
     const baseUrl = test.info().project.use.baseURL;
 
@@ -69,9 +54,6 @@ export class RegistrationPage {
     return response;
   }
 
-  /**
-   * “One-liner” reusable validation assertion.
-   */
   async expectLineError({ message, field }) {
     const fieldMap = {
       email: this.loc.emailInput,
@@ -84,9 +66,6 @@ export class RegistrationPage {
     await expect(this.loc.submitBtn).toBeDisabled();
   }
 
-  /**
-   * Basic “page is ready” guard. Only asserts elements that should always exist immediately.
-   */
   async waitForPageLoad() {
     await expect(this.loc.emailLabel).toBeVisible();
     await expect(this.loc.confirmEmailLabel).toBeVisible();
