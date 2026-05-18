@@ -8,11 +8,7 @@ import {
 import { confirmEmailInput } from './test-data/confirm-email.js';
 import { invalidEmailInput } from './test-data/invalid-email.js';
 
-/**
- * User Registration Form test suite
- */
 test.describe('Automation test suite - User registration form', () => {
-  /** @type {RegistrationPage} */
   let regPage;
 
   test.beforeEach(async ({ page }) => {
